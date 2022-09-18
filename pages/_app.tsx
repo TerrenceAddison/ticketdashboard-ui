@@ -5,7 +5,7 @@ import "../styles/globals.css";
 import Footer from "../components/Footer/Footer";
 
 // This is the chainId your dApp will work on.
-const activeChainId = ChainId.Goerli;
+const activeChainId = ChainId.Mumbai;
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
