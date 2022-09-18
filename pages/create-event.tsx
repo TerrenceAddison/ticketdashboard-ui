@@ -1,11 +1,11 @@
 import { NextComponentType } from "next";
 import { uploadToPinata } from "../utils/uploadToPinata";
 import { useContract, useContractWrite } from "@thirdweb-dev/react";
-import { BigNumber } from "ethers";
+import { BigNumberish, BigNumber } from "ethers";
 
 const EventCreation: NextComponentType = () => {
   const { contract } = useContract(
-    "0xBe50Ab778d0241455BB0055A00eC7DBe76AA391C"
+    "0x402783B28f2FFf17BDa063D14BC29B266ff707F3"
   );
   const {
     mutate: createEvent,
@@ -46,6 +46,8 @@ const EventCreation: NextComponentType = () => {
       _tokenUri: "",
     };
 
+    console.log(data);
+
     const result = await uploadToPinata(
       event.target.ticket_image.files,
       data._eventName,
@@ -53,15 +55,25 @@ const EventCreation: NextComponentType = () => {
     );
     if (result) {
       data._tokenUri = `https://ipfs.io/ipfs/${result.data.IpfsHash}`;
-      const transaction = createEvent([
+      const tx = await contract.call(
+        "createEvent",
         data._eventName,
         BigNumber.from(data._eventDate),
         BigNumber.from(data._purchaseStartDate),
         BigNumber.from(data._ticketPrice),
         BigNumber.from(data._purchaseEndDate),
-        data._tokenUri,
-      ]);
-      console.log(transaction);
+        data._tokenUri
+      );
+      const receipt = tx.receipt;
+      // const transaction = createEvent([
+      //   data._eventName,
+      //   BigNumber.from(data._eventDate),
+      //   BigNumber.from(data._purchaseStartDate),
+      //   BigNumber.from(data._ticketPrice),
+      //   BigNumber.from(data._purchaseEndDate),
+      //   data._tokenUri,
+      // ]);
+      console.log(receipt);
     } else {
       alert("Upload to IPFS Failed!");
     }
